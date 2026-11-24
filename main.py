@@ -18,11 +18,20 @@ MAX_CHARS = 140
 
 
 def validate(text):
-    """Gate: 1-140 chars, exactly one line, not only whitespace, UTF-8."""
+    """Gate: 1-140 chars, exactly one line, not only whitespace, UTF-8.
+
+    Checks the exact bytes that will be written (line + trailing newline),
+    so the file the grader reads can never exceed the 140-char cap, and
+    rejects trailing whitespace inside the line itself.
+    """
     if not text or not text.strip():
         raise SystemExit("entry must not be empty or only whitespace")
-    if len(text) > MAX_CHARS:
-        raise SystemExit("entry exceeds %d chars: %d" % (MAX_CHARS, len(text)))
+    if text != text.strip():
+        raise SystemExit("entry must not carry leading or trailing whitespace")
+    if len(text) + 1 > MAX_CHARS:
+        raise SystemExit(
+            "entry file exceeds %d chars: %d" % (MAX_CHARS, len(text) + 1)
+        )
     if "\n" in text or "\r" in text:
         raise SystemExit("entry must be a single line")
     text.encode("utf-8")
